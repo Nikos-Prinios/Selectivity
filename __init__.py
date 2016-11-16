@@ -6,7 +6,7 @@ bl_info = {
 	"api": 44539,
 	"category": "3D View",
 	"location": "View3D > Header",
-	"description": "Select only the desired type of objects",
+	"description": "Select only the desired types of objects",
 	"warning": "",
 	"wiki_url": "",
 	"tracker_url": "",}
@@ -15,7 +15,7 @@ bl_info = {
 import bpy
 from bpy.types import Header
 
-global use_selective, initial_state
+global use_selective, initial_state,sel_objs,last_selection
 global empties, lights,bones,cameras,meshes,nurbs
 
 empties = False
@@ -28,7 +28,7 @@ nurbs = False
 use_selective = False
 
 last_selection = []
-sel_objs = bpy.context.selected_objects
+
 
 def assembly_handler(scene):
     global empties, lights,bones,cameras,meshes,nurbs,last_selection, use_selective
@@ -167,6 +167,7 @@ class OBJECT_OT_activate(bpy.types.Operator):
     def execute(self, context):
         global use_selective
         use_selective = not use_selective
+        sel_objs = bpy.context.selected_objects
         return{'RUNNING_MODAL'}
 
 bpy.app.handlers.scene_update_post.clear()
