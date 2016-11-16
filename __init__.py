@@ -1,12 +1,12 @@
 bl_info = {
-	"name": "Selective",
+	"name": "Selectivity",
 	"author": "Nicolas Priniotakis (Nikos)",
 	"version": (0,0,1,0),
 	"blender": (2, 7, 8, 0),
 	"api": 44539,
 	"category": "3D View",
 	"location": "View3D > Header",
-	"description": "Allows selection by types",
+	"description": "Select only the desired type of objects",
 	"warning": "",
 	"wiki_url": "",
 	"tracker_url": "",}
@@ -17,7 +17,6 @@ from bpy.types import Header
 
 global use_selective, initial_state
 global empties, lights,bones,cameras,meshes,nurbs
-
 
 empties = False
 lights = False
@@ -101,7 +100,6 @@ class selective_panel(Header):
             sub.operator("cameras.selective", icon='OUTLINER_DATA_CAMERA')
             sub.active = cameras
             
-
 class MESH_SELECTABLE(bpy.types.Operator):
     bl_idname = "meshes.selective"
     bl_label = ""
@@ -151,7 +149,6 @@ class NURBS_SELECTABLE(bpy.types.Operator):
         nurbs = not nurbs
         update('CURVE',nurbs)
         return{'RUNNING_MODAL'}
-    
 
 class EMPTY_SELECTABLE(bpy.types.Operator):
     bl_idname = "empties.selective"
@@ -185,7 +182,6 @@ def register():
     bpy.utils.register_class(EMPTY_SELECTABLE)
     bpy.utils.register_class(selective_panel)
 
-
 def unregister():
     bpy.utils.unregister_class(OBJECT_OT_activate)
     bpy.utils.unregister_class(MESH_SELECTABLE)
@@ -195,7 +191,6 @@ def unregister():
     bpy.utils.unregister_class(NURBS_SELECTABLE)
     bpy.utils.unregister_class(EMPTY_SELECTABLE)
     bpy.utils.unregister_class(selective_panel)
-
 
 if __name__ == "__main__":
     register()
