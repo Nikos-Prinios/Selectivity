@@ -34,6 +34,11 @@ def assembly_handler(scene):
     global empties, lights,bones,cameras,meshes,nurbs,last_selection, use_selective
     if use_selective == True:
         if bpy.context.selected_objects != last_selection:
+            print('change!')	
+            print(bpy.context.selected_objects)
+            print('-------------')
+            print(last_selection)
+            print('Mesh = ' + meshes)
             last_selection = bpy.context.selected_objects
             for obj in bpy.context.selected_objects:
                 if obj.type == 'MESH' and meshes == False:
