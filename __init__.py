@@ -14,6 +14,7 @@ bl_info = {
 
 import bpy
 from bpy.types import Header
+from bpy.app.handlers import persistent
 
 global use_selective, initial_state,sel_objs,last_selection
 global empties, lights,bones,cameras,meshes,nurbs
@@ -176,6 +177,10 @@ class OBJECT_OT_activate(bpy.types.Operator):
         use_selective = not use_selective
         last_selection = bpy.context.selected_objects
         return{'RUNNING_MODAL'}
+
+@persistent
+def load_handler(dummy):
+    print("Load Handler:", bpy.data.filepath)
 
 bpy.app.handlers.scene_update_post.clear()
 bpy.app.handlers.scene_update_post.append(assembly_handler)
