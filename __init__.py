@@ -167,7 +167,7 @@ class OBJECT_OT_activate(bpy.types.Operator):
     def execute(self, context):
         global use_selective
         use_selective = not use_selective
-        sel_objs = bpy.context.selected_objects
+        last_selection = bpy.context.selected_objects
         return{'RUNNING_MODAL'}
 
 bpy.app.handlers.scene_update_post.clear()
