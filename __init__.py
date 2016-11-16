@@ -30,6 +30,7 @@ use_selective = False
 
 last_selection = []
 
+print("loaded")
 
 def assembly_handler(scene):
     print('toto')
@@ -185,25 +186,14 @@ def load_handler(dummy):
 bpy.app.handlers.scene_update_post.clear()
 bpy.app.handlers.scene_update_post.append(assembly_handler)
 
+
+# ----------------- Registration -------------------     
 def register():
-    bpy.utils.register_class(OBJECT_OT_activate)
-    bpy.utils.register_class(MESH_SELECTABLE)
-    bpy.utils.register_class(LIGHT_SELECTABLE)
-    bpy.utils.register_class(BONE_SELECTABLE)
-    bpy.utils.register_class(CAMERA_SELECTABLE)
-    bpy.utils.register_class(NURBS_SELECTABLE)
-    bpy.utils.register_class(EMPTY_SELECTABLE)
-    bpy.utils.register_class(selective_panel)
+    bpy.utils.register_module(__name__)
 
 def unregister():
-    bpy.utils.unregister_class(OBJECT_OT_activate)
-    bpy.utils.unregister_class(MESH_SELECTABLE)
-    bpy.utils.unregister_class(LIGHT_SELECTABLE)
-    bpy.utils.unregister_class(BONE_SELECTABLE)
-    bpy.utils.unregister_class(CAMERA_SELECTABLE)
-    bpy.utils.unregister_class(NURBS_SELECTABLE)
-    bpy.utils.unregister_class(EMPTY_SELECTABLE)
-    bpy.utils.unregister_class(selective_panel)
+    bpy.utils.unregister_module(__name__)
 
 if __name__ == "__main__":
     register()
+Contact GitHub API Training Shop Blog About
