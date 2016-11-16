@@ -31,6 +31,7 @@ last_selection = []
 
 
 def assembly_handler(scene):
+    print('toto')
     global empties, lights,bones,cameras,meshes,nurbs,last_selection, use_selective
     if use_selective == True:
         print('selective')
