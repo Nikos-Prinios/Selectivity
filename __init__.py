@@ -38,7 +38,7 @@ def assembly_handler(scene):
             print(bpy.context.selected_objects)
             print('-------------')
             print(last_selection)
-            print('Mesh = ' + meshes)
+            print('Mesh = ' + str(meshes))
             last_selection = bpy.context.selected_objects
             for obj in bpy.context.selected_objects:
                 if obj.type == 'MESH' and meshes == False:
