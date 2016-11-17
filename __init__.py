@@ -40,10 +40,8 @@ last_selection = []
 
 @persistent
 def assembly_handler(scene):
-    print('toto')
     global empties, lights,bones,cameras,meshes,nurbs,last_selection, use_selective
     if use_selective == True:
-        print('selective')
         if bpy.context.selected_objects != last_selection:
             last_selection = bpy.context.selected_objects
             for obj in bpy.context.selected_objects:
