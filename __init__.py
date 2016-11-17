@@ -43,10 +43,11 @@ print("loaded")
 @persistent
 def load_handler(dummy):
     print("Load Handler:", bpy.data.filepath)
-
+@persistent
 def my_handler(scene):
     print("Frame Change", scene.frame_current)
 
+@persistent
 def assembly_handler(scene):
     print('toto')
     global empties, lights,bones,cameras,meshes,nurbs,last_selection, use_selective
