@@ -40,6 +40,10 @@ last_selection = []
 
 print("loaded")
 
+@persistent
+def load_handler(dummy):
+    print("Load Handler:", bpy.data.filepath)
+
 def assembly_handler(scene):
     print('toto')
     global empties, lights,bones,cameras,meshes,nurbs,last_selection, use_selective
@@ -187,12 +191,8 @@ class OBJECT_OT_activate(bpy.types.Operator):
         last_selection = bpy.context.selected_objects
         return{'RUNNING_MODAL'}
 
-@persistent
-def load_handler(dummy):
-    print("Load Handler:", bpy.data.filepath)
-
-#bpy.app.handlers.scene_update_post.clear()
-#bpy.app.handlers.scene_update_post.append(assembly_handler)
+bpy.app.handlers.scene_update_post.clear()
+bpy.app.handlers.scene_update_post.append(assembly_handler)
 
 
 # ----------------- Registration -------------------     
