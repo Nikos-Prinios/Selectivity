@@ -1,3 +1,11 @@
+
+#  2016 Nicolas Priniotakis (Nikos) - nikos@easy-logging.net
+#
+#  This work is free. You can redistribute it and/or modify it under the
+#  terms of the Do What The Fuck You Want To Public License, Version 2,
+#  as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
+
+
 bl_info = {
 	"name": "Selectivity",
 	"author": "Nicolas Priniotakis (Nikos)",
@@ -183,15 +191,18 @@ class OBJECT_OT_activate(bpy.types.Operator):
 def load_handler(dummy):
     print("Load Handler:", bpy.data.filepath)
 
-bpy.app.handlers.scene_update_post.clear()
-bpy.app.handlers.scene_update_post.append(assembly_handler)
+#bpy.app.handlers.scene_update_post.clear()
+#bpy.app.handlers.scene_update_post.append(assembly_handler)
 
 
 # ----------------- Registration -------------------     
 def register():
+    bpy.app.handlers.scene_update_post.clear()
+    bpy.app.handlers.scene_update_post.append(assembly_handler)
     bpy.utils.register_module(__name__)
 
 def unregister():
+    bpy.app.handlers.scene_update_post.remove(assembly_handler)
     bpy.utils.unregister_module(__name__)
 
 if __name__ == "__main__":
