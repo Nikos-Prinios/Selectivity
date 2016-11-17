@@ -44,6 +44,9 @@ print("loaded")
 def load_handler(dummy):
     print("Load Handler:", bpy.data.filepath)
 
+def my_handler(scene):
+    print("Frame Change", scene.frame_current)
+
 def assembly_handler(scene):
     print('toto')
     global empties, lights,bones,cameras,meshes,nurbs,last_selection, use_selective
@@ -199,10 +202,12 @@ bpy.app.handlers.scene_update_post.append(assembly_handler)
 def register():
     bpy.app.handlers.scene_update_post.clear()
     bpy.app.handlers.scene_update_post.append(assembly_handler)
+    bpy.app.handlers.frame_change_pre.append(my_handler)
     bpy.utils.register_module(__name__)
 
 def unregister():
     bpy.app.handlers.scene_update_post.remove(assembly_handler)
+    bpy.app.handlers.frame_change_pre.remove(my_handler)
     bpy.utils.unregister_module(__name__)
 
 if __name__ == "__main__":
