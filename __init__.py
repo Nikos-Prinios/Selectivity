@@ -38,15 +38,6 @@ use_selective = False
 
 last_selection = []
 
-print("loaded")
-
-@persistent
-def load_handler(dummy):
-    print("Load Handler:", bpy.data.filepath)
-@persistent
-def my_handler(scene):
-    print("Frame Change", scene.frame_current)
-
 @persistent
 def assembly_handler(scene):
     print('toto')
@@ -54,11 +45,6 @@ def assembly_handler(scene):
     if use_selective == True:
         print('selective')
         if bpy.context.selected_objects != last_selection:
-            print('change!')	
-            print(bpy.context.selected_objects)
-            print('-------------')
-            print(last_selection)
-            print('Mesh = ' + str(meshes))
             last_selection = bpy.context.selected_objects
             for obj in bpy.context.selected_objects:
                 if obj.type == 'MESH' and meshes == False:
@@ -203,12 +189,10 @@ bpy.app.handlers.scene_update_post.append(assembly_handler)
 def register():
     bpy.app.handlers.scene_update_post.clear()
     bpy.app.handlers.scene_update_post.append(assembly_handler)
-    bpy.app.handlers.frame_change_pre.append(my_handler)
     bpy.utils.register_module(__name__)
 
 def unregister():
     bpy.app.handlers.scene_update_post.remove(assembly_handler)
-    bpy.app.handlers.frame_change_pre.remove(my_handler)
     bpy.utils.unregister_module(__name__)
 
 if __name__ == "__main__":
