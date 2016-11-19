@@ -5,7 +5,6 @@
 #  terms of the Do What The Fuck You Want To Public License, Version 2,
 #  as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
 
-
 bl_info = {
 	"name": "Selectivity",
 	"author": "Nicolas Priniotakis (Nikos)",
@@ -23,11 +22,9 @@ bl_info = {
 import bpy
 from bpy.types import Header
 from bpy.app.handlers import persistent
-
 global use_selective, last_selection
 
 last_selection = []
-
 
 @persistent      
 def prop_update(self,context):
@@ -46,7 +43,7 @@ def prop_update(self,context):
                 obj.select = False
             if obj.type == 'ARMATURE' and context.scene.bones == False:
                 obj.select = False
-
+		
 @persistent
 def update(scene):
     global last_selection
@@ -84,7 +81,6 @@ class selective_panel(Header):
             row.separator()
             row.operator("objects.activate", icon='PINNED', text='')  
             row = layout.row()
-          
             row.prop(bpy.context.scene,"meshes", "", icon='MESH_DATA')
             row.prop(bpy.context.scene,"nurbs", "", icon='CURVE_DATA')
             row.prop(bpy.context.scene,"bones", "", icon='BONE_DATA')
@@ -92,7 +88,6 @@ class selective_panel(Header):
             row.prop(bpy.context.scene,"empties", "", icon='OUTLINER_OB_EMPTY')
             row.prop(bpy.context.scene,"cameras", "", icon='OUTLINER_DATA_CAMERA')
             
-   
 class OBJECT_OT_activate(bpy.types.Operator):
     bl_idname = "objects.activate"
     bl_label = "Activate Selective"
@@ -100,7 +95,6 @@ class OBJECT_OT_activate(bpy.types.Operator):
     def execute(self, context):
         global use_selective, last_selection
         last_selection = bpy.context.selected_objects
-        print(last_selection)
         use_selective = not use_selective
         if use_selective:
             prop_update(self, bpy.context)
