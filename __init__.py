@@ -102,7 +102,8 @@ class OBJECT_OT_activate(bpy.types.Operator):
         last_selection = bpy.context.selected_objects
         print(last_selection)
         use_selective = not use_selective
-        update(self)
+        if use_selective:
+            prop_update(self, bpy.context)
         return{'RUNNING_MODAL'}
 
 bpy.app.handlers.scene_update_post.clear()
@@ -115,6 +116,7 @@ def register():
     bpy.utils.register_module(__name__)
 
 def unregister():
+    bpy.app.handlers.scene_update_post.clear()
     bpy.app.handlers.scene_update_post.remove(update)
     bpy.utils.unregister_module(__name__)
 
