@@ -24,47 +24,44 @@ import bpy
 from bpy.types import Header
 from bpy.app.handlers import persistent
 
-global use_selective, initial_state,sel_objs,last_selection
-global empties, lights,bones,cameras,meshes,nurbs
-#bpy.types.Scene.meshes = bpy.props.BoolProperty(name="Meshes", icon='MESH_DATA', default = False)
-
-
-empties = False
-lights = False
-bones = False
-cameras = False
-meshes = False
-nurbs = False
-
-use_selective = False
+global use_selective, last_selection
 
 last_selection = []
 
-@persistent
-def assembly_handler(scene):
-    global empties, lights,bones,cameras,meshes,nurbs,last_selection, use_selective
+
+@persistent      
+def prop_update(self,context):
+    global use_selective, last_selection
     if use_selective == True:
-        if bpy.context.selected_objects != last_selection:
-            last_selection = bpy.context.selected_objects
-            for obj in bpy.context.selected_objects:
-                if obj.type == 'MESH' and meshes == False:
-                    obj.select = False
-                if obj.type == 'CAMERA' and cameras == False:
-                    obj.select = False
-                if obj.type == 'LAMP' and lights == False:
-                    obj.select = False
-                if obj.type == 'EMPTY' and empties == False:
-                    obj.select = False
-                if obj.type == 'CURVE' and nurbs == False:
-                    obj.select = False
-                if obj.type == 'ARMATURE' and bones == False:
-                    obj.select = False
+        for obj in bpy.context.selected_objects:
+            if obj.type == 'MESH' and context.scene.meshes == False:
+                obj.select = False
+            if obj.type == 'CAMERA' and context.scene.cameras == False:
+                obj.select = False
+            if obj.type == 'LAMP' and context.scene.lights == False:
+                obj.select = False
+            if obj.type == 'EMPTY' and context.scene.empties == False:
+                obj.select = False
+            if obj.type == 'CURVE' and context.scene.nurbs == False:
+                obj.select = False
+            if obj.type == 'ARMATURE' and context.scene.bones == False:
+                obj.select = False
 
-def update(type,state):
-    for obj in bpy.context.selected_objects:
-        if obj.type == type and state == False :
-            obj.select = False
+@persistent
+def update(scene):
+    global last_selection
+    if bpy.context.selected_objects != last_selection:
+        last_selection = bpy.context.selected_objects
+        prop_update(scene,bpy.context)
+        
+bpy.types.Scene.meshes = bpy.props.BoolProperty(name="Meshes", default = False, update = prop_update)
+bpy.types.Scene.nurbs = bpy.props.BoolProperty(name="Nurbs", default = False, update = prop_update)
+bpy.types.Scene.cameras = bpy.props.BoolProperty(name="Lights", default = False, update = prop_update)
+bpy.types.Scene.lights = bpy.props.BoolProperty(name="Meshes", default = False, update = prop_update)
+bpy.types.Scene.empties = bpy.props.BoolProperty(name="Empties", default = False,update = prop_update)
+bpy.types.Scene.bones = bpy.props.BoolProperty(name="Bones", default = False, update = prop_update)
 
+use_selective = False
 
 class selective_panel(Header):
     bl_space_type = 'VIEW_3D'
@@ -87,116 +84,39 @@ class selective_panel(Header):
             row.separator()
             row.operator("objects.activate", icon='PINNED', text='')  
             row = layout.row()
-            sub = row.row()
-            sub.operator("meshes.selective", icon='MESH_DATA')
-            sub.active = meshes
+          
+            row.prop(bpy.context.scene,"meshes", "", icon='MESH_DATA')
+            row.prop(bpy.context.scene,"nurbs", "", icon='CURVE_DATA')
+            row.prop(bpy.context.scene,"bones", "", icon='BONE_DATA')
+            row.prop(bpy.context.scene,"lights", "", icon='LAMP')
+            row.prop(bpy.context.scene,"empties", "", icon='OUTLINER_OB_EMPTY')
+            row.prop(bpy.context.scene,"cameras", "", icon='OUTLINER_DATA_CAMERA')
             
-            sub = row.row()
-            sub.operator("nurbs.selective", icon='CURVE_DATA')
-            sub.active = nurbs   
-            
-            sub = row.row()
-            sub.operator("bones.selective", icon='BONE_DATA')
-            sub.active = bones
-            
-            sub = row.row()
-            sub.operator("lights.selective", icon='LAMP')
-            sub.active = lights
-
-            sub = row.row()
-            sub.operator("empties.selective", icon='OUTLINER_OB_EMPTY')
-            sub.active = empties
-            
-            sub = row.row()
-            sub.operator("cameras.selective", icon='OUTLINER_DATA_CAMERA')
-            sub.active = cameras
-		
-            #row.prop(bpy.context.scene,"meshes")
-            
-class MESH_SELECTABLE(bpy.types.Operator):
-    bl_idname = "meshes.selective"
-    bl_label = ""
-    
-    def execute(self, context):
-        global meshes
-        meshes = not meshes
-        update('MESH',meshes)
-        return{'RUNNING_MODAL'}
-    
-class LIGHT_SELECTABLE(bpy.types.Operator):
-    bl_idname = "lights.selective"
-    bl_label = ""
-    
-    def execute(self, context):
-        global lights
-        lights = not lights
-        update('LAMP',lights)
-        return{'RUNNING_MODAL'}
-
-class BONE_SELECTABLE(bpy.types.Operator):
-    bl_idname = "bones.selective"
-    bl_label = ""
-    
-    def execute(self, context):
-        global bones
-        bones = not bones
-        update('ARMATURE',bones)
-        return{'RUNNING_MODAL'}
-
-class CAMERA_SELECTABLE(bpy.types.Operator):
-    bl_idname = "cameras.selective"
-    bl_label = ""
-    
-    def execute(self, context):
-        global cameras
-        cameras = not cameras
-        update('CAMERA',cameras)
-        return{'RUNNING_MODAL'}
-    
-class NURBS_SELECTABLE(bpy.types.Operator):
-    bl_idname = "nurbs.selective"
-    bl_label = ""
-    
-    def execute(self, context):
-        global nurbs
-        nurbs = not nurbs
-        update('CURVE',nurbs)
-        return{'RUNNING_MODAL'}
-
-class EMPTY_SELECTABLE(bpy.types.Operator):
-    bl_idname = "empties.selective"
-    bl_label = ""
-    
-    def execute(self, context):
-        global empties
-        empties = not empties
-        update('EMPTY',empties)
-        return{'RUNNING_MODAL'}
    
 class OBJECT_OT_activate(bpy.types.Operator):
     bl_idname = "objects.activate"
     bl_label = "Activate Selective"
  
     def execute(self, context):
-        global use_selective
-        use_selective = not use_selective
+        global use_selective, last_selection
         last_selection = bpy.context.selected_objects
+        print(last_selection)
+        use_selective = not use_selective
+        update(self)
         return{'RUNNING_MODAL'}
 
 bpy.app.handlers.scene_update_post.clear()
-bpy.app.handlers.scene_update_post.append(assembly_handler)
-
+bpy.app.handlers.scene_update_post.append(update)
 
 # ----------------- Registration -------------------     
 def register():
     bpy.app.handlers.scene_update_post.clear()
-    bpy.app.handlers.scene_update_post.append(assembly_handler)
+    bpy.app.handlers.scene_update_post.append(update)
     bpy.utils.register_module(__name__)
 
 def unregister():
-    bpy.app.handlers.scene_update_post.remove(assembly_handler)
+    bpy.app.handlers.scene_update_post.remove(update)
     bpy.utils.unregister_module(__name__)
 
 if __name__ == "__main__":
     register()
-
