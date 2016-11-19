@@ -26,7 +26,7 @@ from bpy.app.handlers import persistent
 
 global use_selective, initial_state,sel_objs,last_selection
 global empties, lights,bones,cameras,meshes,nurbs
-bpy.types.Scene.meshes = bpy.props.BoolProperty(name="Meshes", default = False)
+bpy.types.Scene.meshes = bpy.props.BoolProperty(name="Meshes", icon='MESH_DATA', default = False)
 
 
 empties = False
