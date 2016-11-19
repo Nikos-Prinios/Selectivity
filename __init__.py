@@ -26,6 +26,8 @@ from bpy.app.handlers import persistent
 
 global use_selective, initial_state,sel_objs,last_selection
 global empties, lights,bones,cameras,meshes,nurbs
+bpy.types.Scene.meshes = bpy.props.BoolProperty(name="Meshes", default = False)
+
 
 empties = False
 lights = False
@@ -108,6 +110,8 @@ class selective_panel(Header):
             sub = row.row()
             sub.operator("cameras.selective", icon='OUTLINER_DATA_CAMERA')
             sub.active = cameras
+		
+            row.prop(bpy.context.scene,"Meshes")
             
 class MESH_SELECTABLE(bpy.types.Operator):
     bl_idname = "meshes.selective"
