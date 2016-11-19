@@ -111,7 +111,7 @@ class selective_panel(Header):
             sub.operator("cameras.selective", icon='OUTLINER_DATA_CAMERA')
             sub.active = cameras
 		
-            row.prop(bpy.context.scene,"Meshes")
+            row.prop(bpy.context.scene,"meshes")
             
 class MESH_SELECTABLE(bpy.types.Operator):
     bl_idname = "meshes.selective"
