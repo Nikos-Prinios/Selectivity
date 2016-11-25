@@ -22,34 +22,30 @@ bl_info = {
 import bpy
 from bpy.types import Header
 from bpy.app.handlers import persistent
-global use_selective, last_selection
-
-last_selection = []
-
-@persistent      
+global use_selective
+      
 def prop_update(self,context):
-    global use_selective, last_selection
+    global use_selective
+    
     if use_selective == True:
-        for obj in bpy.context.selected_objects:
-            if obj.type == 'MESH' and context.scene.meshes == False:
-                obj.select = False
-            if obj.type == 'CAMERA' and context.scene.cameras == False:
-                obj.select = False
-            if obj.type == 'LAMP' and context.scene.lights == False:
-                obj.select = False
-            if obj.type == 'EMPTY' and context.scene.empties == False:
-                obj.select = False
-            if obj.type == 'CURVE' and context.scene.nurbs == False:
-                obj.select = False
-            if obj.type == 'ARMATURE' and context.scene.bones == False:
-                obj.select = False
-		
-@persistent
-def update(scene):
-    global last_selection
-    if bpy.context.selected_objects != last_selection:
-        last_selection = bpy.context.selected_objects
-        prop_update(scene,bpy.context)
+        for obj in bpy.context.scene.objects:
+            if obj.type == 'MESH':
+                obj.hide_select = not context.scene.meshes
+                
+            if obj.type == 'CAMERA':
+                obj.hide_select = not context.scene.cameras
+
+            if obj.type == 'LAMP':
+                obj.hide_select = not context.scene.lights
+
+            if obj.type == 'EMPTY':
+                obj.hide_select = not context.scene.empties
+                
+            if obj.type == 'CURVE':
+                obj.hide_select = not context.scene.nurbs
+                
+            if obj.type == 'ARMATURE' :
+                obj.hide_select = not context.scene.bones
         
 bpy.types.Scene.meshes = bpy.props.BoolProperty(name="Meshes", default = False, update = prop_update)
 bpy.types.Scene.nurbs = bpy.props.BoolProperty(name="Nurbs", default = False, update = prop_update)
@@ -58,7 +54,20 @@ bpy.types.Scene.lights = bpy.props.BoolProperty(name="Meshes", default = False, 
 bpy.types.Scene.empties = bpy.props.BoolProperty(name="Empties", default = False,update = prop_update)
 bpy.types.Scene.bones = bpy.props.BoolProperty(name="Bones", default = False, update = prop_update)
 
+bpy.types.Object.init = bpy.props.BoolProperty(name="init",description="Initial state",default = True)
+bpy.types.Object.temp = bpy.props.BoolProperty(name="temp",description="Temp state",default = False)
+
+
 use_selective = False
+
+def initial_read():
+    for obj in bpy.context.scene.objects:
+        obj.init = obj.hide_select
+
+def initial_write():
+    for obj in bpy.context.scene.objects:
+        obj.hide_select = obj.init
+
 
 class selective_panel(Header):
     bl_space_type = 'VIEW_3D'
@@ -71,7 +80,7 @@ class selective_panel(Header):
         layout = self.layout
         global use_selective
         global empties, lights,bones,cameras,meshes,nurbs,others
-        if not use_selective == True :
+        if not use_selective :
             row = layout.row()
             row.separator()
             row.operator("objects.activate", icon='UNPINNED', text='Selectivity : OFF')
@@ -93,25 +102,21 @@ class OBJECT_OT_activate(bpy.types.Operator):
     bl_label = "Activate Selective"
  
     def execute(self, context):
-        global use_selective, last_selection
-        last_selection = bpy.context.selected_objects
+        global use_selective
+        
         use_selective = not use_selective
         if use_selective:
+            initial_read()
             prop_update(self, bpy.context)
+        else:
+            initial_write()
         return{'RUNNING_MODAL'}
-
-bpy.app.handlers.scene_update_post.clear()
-bpy.app.handlers.scene_update_post.append(update)
 
 # ----------------- Registration -------------------     
 def register():
-    bpy.app.handlers.scene_update_post.clear()
-    bpy.app.handlers.scene_update_post.append(update)
     bpy.utils.register_module(__name__)
 
 def unregister():
-    bpy.app.handlers.scene_update_post.clear()
-    bpy.app.handlers.scene_update_post.remove(update)
     bpy.utils.unregister_module(__name__)
 
 if __name__ == "__main__":
