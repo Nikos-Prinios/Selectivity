@@ -56,8 +56,6 @@ S.bones = bpy.props.BoolProperty(name="Bones", default = False, update = prop_up
 
 bpy.types.Object.init = bpy.props.BoolProperty(name="init",description="Initial state",default = True)
 
-
-
 use_selective = False
 
 def initial_read():
@@ -67,7 +65,6 @@ def initial_read():
 def initial_write():
     for obj in bpy.context.scene.objects:
         obj.hide_select = obj.init
-
 
 class selective_panel(Header):
     bl_space_type = 'VIEW_3D'
