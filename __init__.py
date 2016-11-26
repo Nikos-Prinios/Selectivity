@@ -31,31 +31,43 @@ def prop_update(self,context):
         for obj in bpy.context.scene.objects:
             if obj.type == 'MESH':
                 obj.hide_select = not context.scene.meshes
+                if obj.select == True and obj.hide_select == True :
+                    obj.select = False
                 
             if obj.type == 'CAMERA':
                 obj.hide_select = not context.scene.cameras
+                if obj.select == True and obj.hide_select == True :
+                    obj.select = False
 
             if obj.type == 'LAMP':
                 obj.hide_select = not context.scene.lights
+                if obj.select == True and obj.hide_select == True :
+                    obj.select = False
 
             if obj.type == 'EMPTY':
                 obj.hide_select = not context.scene.empties
+                if obj.select == True and obj.hide_select == True :
+                    obj.select = False
                 
             if obj.type == 'CURVE':
                 obj.hide_select = not context.scene.nurbs
+                if obj.select == True and obj.hide_select == True :
+                    obj.select = False
                 
             if obj.type == 'ARMATURE' :
                 obj.hide_select = not context.scene.bones
-        
-bpy.types.Scene.meshes = bpy.props.BoolProperty(name="Meshes", default = False, update = prop_update)
-bpy.types.Scene.nurbs = bpy.props.BoolProperty(name="Nurbs", default = False, update = prop_update)
-bpy.types.Scene.cameras = bpy.props.BoolProperty(name="Lights", default = False, update = prop_update)
-bpy.types.Scene.lights = bpy.props.BoolProperty(name="Meshes", default = False, update = prop_update)
-bpy.types.Scene.empties = bpy.props.BoolProperty(name="Empties", default = False,update = prop_update)
-bpy.types.Scene.bones = bpy.props.BoolProperty(name="Bones", default = False, update = prop_update)
+                if obj.select == True and obj.hide_select == True :
+                    obj.select = False
+S = bpy.types.Scene        
+S.meshes = bpy.props.BoolProperty(name="Meshes", default = False, update = prop_update)
+S.nurbs = bpy.props.BoolProperty(name="Nurbs", default = False, update = prop_update)
+S.cameras = bpy.props.BoolProperty(name="Cameras", default = False, update = prop_update)
+S.lights = bpy.props.BoolProperty(name="Lights", default = False, update = prop_update)
+S.empties = bpy.props.BoolProperty(name="Empties", default = False,update = prop_update)
+S.bones = bpy.props.BoolProperty(name="Bones", default = False, update = prop_update)
 
 bpy.types.Object.init = bpy.props.BoolProperty(name="init",description="Initial state",default = True)
-bpy.types.Object.temp = bpy.props.BoolProperty(name="temp",description="Temp state",default = False)
+
 
 
 use_selective = False
