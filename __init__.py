@@ -84,8 +84,11 @@ class selective_panel(Header):
         else :
             row = layout.row(align=True)
             row.separator()
-            row.operator("objects.activate", icon='PINNED', text='')  
-            row = layout.row()
+            row.operator("objects.activate", icon='PINNED', text='') 
+             
+            row = layout.row(align=True)
+            row.active = True
+            #row = box.row()
             row.prop(bpy.context.scene,"meshes", "", icon='MESH_DATA')
             row.prop(bpy.context.scene,"nurbs", "", icon='CURVE_DATA')
             row.prop(bpy.context.scene,"bones", "", icon='BONE_DATA')
