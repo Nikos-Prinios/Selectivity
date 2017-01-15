@@ -19,7 +19,7 @@
 bl_info = {
 	"name": "Selectivity",
 	"author": "Alesis & Nikos",
-	"version": (0,0,1,0),
+	"version": (0,0,1,2),
 	"blender": (2, 7, 8, 0),
 	"api": 44539,
 	"category": "3D View",
@@ -28,7 +28,7 @@ bl_info = {
 	"warning": "",
 	"wiki_url": "",
 	"tracker_url": "",}
-''' version 0.1b '''
+''' version 0.0.1.2 '''
 
 import bpy
 from bpy.types import Header
