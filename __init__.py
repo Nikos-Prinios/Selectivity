@@ -17,7 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 bl_info = {
-	"name": "Selection Restrictor",
+	"name": "Selectivity",
 	"author": "Alesis & Nikos",
 	"version": (0,0,1,0),
 	"blender": (2, 7, 8, 0),
