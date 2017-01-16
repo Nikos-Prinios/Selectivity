@@ -17,9 +17,9 @@
 # ##### END GPL LICENSE BLOCK #####
 
 bl_info = {
-	"name": "Selectivity",
+	"name": "Selection Restrictor",
 	"author": "Alesis & Nikos",
-	"version": (0,0,1,2),
+	"version": (0,0,1,0),
 	"blender": (2, 7, 8, 0),
 	"api": 44539,
 	"category": "3D View",
@@ -28,7 +28,7 @@ bl_info = {
 	"warning": "",
 	"wiki_url": "",
 	"tracker_url": "",}
-''' version 0.0.1.2 '''
+''' version 0.1b '''
 
 import bpy
 from bpy.types import Header
@@ -36,7 +36,7 @@ from bpy.app.handlers import persistent
 from bpy.types import Operator, AddonPreferences
 from bpy.props import BoolProperty
 from bpy.app.handlers import persistent
-global use_selective
+global sel_restrictor
 global obj_num
 
 obj_num = 1
@@ -57,35 +57,35 @@ def prop_update(self,context):
 
 
 def update():
-    global use_selective
+    global sel_restrictor
     context = bpy.context
-    if use_selective :
+    if sel_restrictor :
         for obj in bpy.context.scene.objects:
             if obj.type == 'MESH':
-                obj.hide_select = not context.scene.meshes
+                obj.is_selectable = not context.scene.meshes
             if obj.type == 'CAMERA':
-                obj.hide_select = not context.scene.cameras
+                obj.is_selectable = not context.scene.cameras
             if obj.type == 'LAMP':
-                obj.hide_select = not context.scene.lights
+                obj.is_selectable = not context.scene.lights
             if obj.type == 'EMPTY':
-                obj.hide_select = not context.scene.empties
+                obj.is_selectable = not context.scene.empties
             if obj.type == 'CURVE':
-                obj.hide_select = not context.scene.nurbs
+                obj.is_selectable = not context.scene.nurbs
             if obj.type == 'ARMATURE' :
-                obj.hide_select = not context.scene.bones
+                obj.is_selectable = not context.scene.bones
             if obj.type == 'SURFACE' :
-                obj.hide_select = not context.scene.surfaces
+                obj.is_selectable = not context.scene.surfaces
             if obj.type == 'FONT' :
-                obj.hide_select = not context.scene.texts
+                obj.is_selectable = not context.scene.texts
             if obj.type == 'LATTICE' :
-                obj.hide_select = not context.scene.lattices
+                obj.is_selectable = not context.scene.lattices
             if obj.field.type != 'NONE' :
-                obj.hide_select = not context.scene.fields
-            if obj.type == 'BALL' :
-                obj.hide_select = not context.scene.metaballs
+                obj.is_selectable = not context.scene.fields
+            if obj.type == 'META' :
+                obj.is_selectable = not context.scene.metaballs
                 
     for obj in bpy.context.scene.objects:        
-            if obj.select and obj.hide_select :
+            if obj.select and obj.is_selectable :
                 obj.select = False
                 
 S = bpy.types.Scene        
@@ -103,15 +103,15 @@ S.metaballs = bpy.props.BoolProperty(name="metaballs", default = False, update =
 
 bpy.types.Object.init = bpy.props.BoolProperty(name="init",description="Initial state",default = False)
 
-use_selective = False
+sel_restrictor = False
 
 def initial_read():
     for obj in bpy.context.scene.objects:
-        obj.init = obj.hide_select
+        obj.init = obj.is_selectable
 
 def initial_write():
     for obj in bpy.context.scene.objects:
-        obj.hide_select = obj.init
+        obj.is_selectable = obj.init
 
 class selective_panel(Header):
     bl_space_type = 'VIEW_3D'
@@ -122,7 +122,7 @@ class selective_panel(Header):
 
     def draw(self, context):
         layout = self.layout
-        global use_selective, empties,lights,bones,cameras,meshes,nurbs
+        global sel_restrictor, empties,lights,bones,cameras,meshes,nurbs
 
         mesh_button = bpy.context.user_preferences.addons[__name__].preferences.mesh_button
         light_button = bpy.context.user_preferences.addons[__name__].preferences.light_button
@@ -136,7 +136,7 @@ class selective_panel(Header):
         field_button = bpy.context.user_preferences.addons[__name__].preferences.field_button
         metaball_button = bpy.context.user_preferences.addons[__name__].preferences.metaball_button
 
-        if not use_selective :
+        if not sel_restrictor :
             row = layout.row()
             row.separator()
             row.operator("objects.activate", icon='UNPINNED', text='Selectivity')
@@ -167,10 +167,10 @@ class OBJECT_OT_activate(bpy.types.Operator):
     bl_label = "Activate Selective"
  
     def execute(self, context):
-        global use_selective
+        global sel_restrictor
         
-        use_selective = not use_selective
-        if use_selective:
+        sel_restrictor = not sel_restrictor
+        if sel_restrictor:
             initial_read()
             prop_update(self, bpy.context)
         else:
