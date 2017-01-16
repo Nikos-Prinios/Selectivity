@@ -62,30 +62,30 @@ def update():
     if sel_restrictor :
         for obj in bpy.context.scene.objects:
             if obj.type == 'MESH':
-                obj.is_selectable = not context.scene.meshes
+                obj.hide_select = not context.scene.meshes
             if obj.type == 'CAMERA':
-                obj.is_selectable = not context.scene.cameras
+                obj.hide_select = not context.scene.cameras
             if obj.type == 'LAMP':
-                obj.is_selectable = not context.scene.lights
+                obj.hide_select = not context.scene.lights
             if obj.type == 'EMPTY':
-                obj.is_selectable = not context.scene.empties
+                obj.hide_select = not context.scene.empties
             if obj.type == 'CURVE':
-                obj.is_selectable = not context.scene.nurbs
+                obj.hide_select = not context.scene.nurbs
             if obj.type == 'ARMATURE' :
-                obj.is_selectable = not context.scene.bones
+                obj.hide_select = not context.scene.bones
             if obj.type == 'SURFACE' :
-                obj.is_selectable = not context.scene.surfaces
+                obj.hide_select = not context.scene.surfaces
             if obj.type == 'FONT' :
-                obj.is_selectable = not context.scene.texts
+                obj.hide_select = not context.scene.texts
             if obj.type == 'LATTICE' :
-                obj.is_selectable = not context.scene.lattices
+                obj.hide_select = not context.scene.lattices
             if obj.field.type != 'NONE' :
-                obj.is_selectable = not context.scene.fields
+                obj.hide_select = not context.scene.fields
             if obj.type == 'META' :
-                obj.is_selectable = not context.scene.metaballs
+                obj.hide_select = not context.scene.metaballs
                 
     for obj in bpy.context.scene.objects:        
-            if obj.select and obj.is_selectable :
+            if obj.select and obj.hide_select :
                 obj.select = False
                 
 S = bpy.types.Scene        
@@ -107,11 +107,11 @@ sel_restrictor = False
 
 def initial_read():
     for obj in bpy.context.scene.objects:
-        obj.init = obj.is_selectable
+        obj.init = obj.hide_select
 
 def initial_write():
     for obj in bpy.context.scene.objects:
-        obj.is_selectable = obj.init
+        obj.hide_select = obj.init
 
 class selective_panel(Header):
     bl_space_type = 'VIEW_3D'
