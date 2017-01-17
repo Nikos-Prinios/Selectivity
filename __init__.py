@@ -17,7 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 bl_info = {
-	"name": "Selection Restrictor",
+	"name": "Selection-Restrictor",
 	"author": "Alesis & Nikos",
 	"version": (0,0,1,0),
 	"blender": (2, 7, 8, 0),
@@ -28,7 +28,7 @@ bl_info = {
 	"warning": "",
 	"wiki_url": "",
 	"tracker_url": "",}
-''' version 0.1b '''
+''' version 1.5 '''
 
 import bpy
 from bpy.types import Header
@@ -66,7 +66,6 @@ def update():
     emissive_as_light = bpy.context.user_preferences.addons[__name__].preferences.emissive_as_light
     hidden_selectable = bpy.context.user_preferences.addons[__name__].preferences.hidden_selectable
     start_with = bpy.context.user_preferences.addons[__name__].preferences.start_with
-
     mesh_button = bpy.context.user_preferences.addons[__name__].preferences.mesh_button
     camera_button = bpy.context.user_preferences.addons[__name__].preferences.camera_button
     light_button = bpy.context.user_preferences.addons[__name__].preferences.light_button
@@ -80,62 +79,62 @@ def update():
     metaball_button = bpy.context.user_preferences.addons[__name__].preferences.metaball_button
 
     context = bpy.context
+    if sel_restrictor:
+        for obj in bpy.context.scene.objects:
+            if obj.type == 'MESH':
+                if emissive_as_light and is_emissive(obj) and obj.name.startswith(start_with):
+                    obj.hide_select = not context.scene.lights  
+                    print(obj.name)  
+                else:
+                    obj.hide_select = not context.scene.meshes
+            if obj.type == 'CAMERA':
+                obj.hide_select = not context.scene.cameras
+            if obj.type == 'LAMP':
+                obj.hide_select = not context.scene.lights
+            if obj.type == 'EMPTY':
+                obj.hide_select = not context.scene.empties
+            if obj.type == 'CURVE':
+                obj.hide_select = not context.scene.nurbs
+            if obj.type == 'ARMATURE' :
+                obj.hide_select = not context.scene.bones
+            if obj.type == 'SURFACE' :
+                obj.hide_select = not context.scene.surfaces
+            if obj.type == 'FONT' :
+                obj.hide_select = not context.scene.texts
+            if obj.type == 'LATTICE' :
+                obj.hide_select = not context.scene.lattices
+            if obj.field.type != 'NONE' :
+                obj.hide_select = not context.scene.fields
+            if obj.type == 'META' :
+                obj.hide_select = not context.scene.metaballs
 
-    for obj in bpy.context.scene.objects:
-        if obj.type == 'MESH':
-            if emissive_as_light and is_emissive(obj) and obj.name.startswith(start_with):
-                obj.hide_select = not context.scene.lights  
-                print(obj.name)  
-            else:
-                obj.hide_select = not context.scene.meshes
-        if obj.type == 'CAMERA':
-            obj.hide_select = not context.scene.cameras
-        if obj.type == 'LAMP':
-            obj.hide_select = not context.scene.lights
-        if obj.type == 'EMPTY':
-            obj.hide_select = not context.scene.empties
-        if obj.type == 'CURVE':
-            obj.hide_select = not context.scene.nurbs
-        if obj.type == 'ARMATURE' :
-            obj.hide_select = not context.scene.bones
-        if obj.type == 'SURFACE' :
-            obj.hide_select = not context.scene.surfaces
-        if obj.type == 'FONT' :
-            obj.hide_select = not context.scene.texts
-        if obj.type == 'LATTICE' :
-            obj.hide_select = not context.scene.lattices
-        if obj.field.type != 'NONE' :
-            obj.hide_select = not context.scene.fields
-        if obj.type == 'META' :
-            obj.hide_select = not context.scene.metaballs
+        for obj in bpy.context.scene.objects:
+            if obj.type == 'MESH' and not mesh_button:
+                obj.hide_select = hidden_selectable
+            if obj.type == 'CAMERA' and not camera_button:
+                obj.hide_select = hidden_selectable
+            if obj.type == 'LAMP' and not light_button:
+                obj.hide_select = hidden_selectable
+            if obj.type == 'EMPTY' and not empty_button:
+                obj.hide_select = hidden_selectable
+            if obj.type == 'CURVE' and not curve_button:
+                obj.hide_select = hidden_selectable
+            if obj.type == 'ARMATURE' and not armature_button:
+                obj.hide_select = hidden_selectable
+            if obj.type == 'SURFACE' and not surface_button:
+                obj.hide_select = hidden_selectable
+            if obj.type == 'FONT' and not text_button:
+                obj.hide_select = hidden_selectable
+            if obj.type == 'LATTICE' and not lattice_button:
+                obj.hide_select = hidden_selectable
+            if obj.field.type != 'NONE' and not field_button:
+                obj.hide_select = hidden_selectable
+            if obj.type == 'META' and not metaball_button:
+                obj.hide_select = hidden_selectable
 
-    for obj in bpy.context.scene.objects:
-        if obj.type == 'MESH' and not mesh_button:
-            obj.hide_select = hidden_selectable
-        if obj.type == 'CAMERA' and not camera_button:
-            obj.hide_select = hidden_selectable
-        if obj.type == 'LAMP' and not light_button:
-            obj.hide_select = hidden_selectable
-        if obj.type == 'EMPTY' and not empty_button:
-            obj.hide_select = hidden_selectable
-        if obj.type == 'CURVE' and not curve_button:
-            obj.hide_select = hidden_selectable
-        if obj.type == 'ARMATURE' and not armature_button:
-            obj.hide_select = hidden_selectable
-        if obj.type == 'SURFACE' and not surface_button:
-            obj.hide_select = hidden_selectable
-        if obj.type == 'FONT' and not text_button:
-            obj.hide_select = hidden_selectable
-        if obj.type == 'LATTICE' and not lattice_button:
-            obj.hide_select = hidden_selectable
-        if obj.field.type != 'NONE' and not field_button:
-            obj.hide_select = hidden_selectable
-        if obj.type == 'META' and not metaball_button:
-            obj.hide_select = hidden_selectable
-
-    for obj in bpy.context.scene.objects:        
-            if obj.select and obj.hide_select :
-                obj.select = False
+        for obj in bpy.context.scene.objects:        
+                if obj.select and obj.hide_select :
+                    obj.select = False
                 
 S = bpy.types.Scene        
 S.meshes = bpy.props.BoolProperty(name="Meshes", default = False, update = prop_update)
@@ -227,7 +226,6 @@ class OBJECT_OT_activate(bpy.types.Operator):
         return{'RUNNING_MODAL'}
 
 class SelectivityPreferences(AddonPreferences):
-    
     bl_idname = __name__
 
     mesh_button = BoolProperty(
@@ -275,9 +273,6 @@ class SelectivityPreferences(AddonPreferences):
             default=False,
             )
 
-# here : light
-# hidden types are selectable
-
     emissive_as_light = BoolProperty(
             name="other light",
             default=False,
@@ -321,9 +316,8 @@ class SelectivityPreferences(AddonPreferences):
         
 
 class OBJECT_OT_addon_prefs(Operator):
-    """Display example preferences"""
     bl_idname = "object.selectivity_prefs"
-    bl_label = "Selectivity Preferences"
+    bl_label = "Selection Restrictor Preferences"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
@@ -337,8 +331,7 @@ class OBJECT_OT_addon_prefs(Operator):
         print(info)
 
         return {'FINISHED'}
-
-# ----------------- Registration -------------------     
+  
 def register():
     bpy.utils.register_module(__name__)
     bpy.app.handlers.scene_update_post.clear()
