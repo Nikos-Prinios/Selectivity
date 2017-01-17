@@ -17,7 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 bl_info = {
-	"name": "Selectivity",
+	"name": "Selection Restrictor",
 	"author": "Alesis & Nikos",
 	"version": (0,0,1,0),
 	"blender": (2, 7, 8, 0),
@@ -34,7 +34,7 @@ import bpy
 from bpy.types import Header
 from bpy.app.handlers import persistent
 from bpy.types import Operator, AddonPreferences
-from bpy.props import BoolProperty
+from bpy.props import BoolProperty, StringProperty
 from bpy.app.handlers import persistent
 global sel_restrictor
 global obj_num
@@ -55,35 +55,84 @@ def need_update(dummy):
 def prop_update(self,context):
     update()
 
+def is_emissive(obj):
+    for mat in obj.data.materials:
+        for n in mat.node_tree.nodes:
+            if n.type == "EMISSION":
+                return True
 
 def update():
     global sel_restrictor
+    emissive_as_light = bpy.context.user_preferences.addons[__name__].preferences.emissive_as_light
+    hidden_selectable = bpy.context.user_preferences.addons[__name__].preferences.hidden_selectable
+    start_with = bpy.context.user_preferences.addons[__name__].preferences.start_with
+
+    mesh_button = bpy.context.user_preferences.addons[__name__].preferences.mesh_button
+    camera_button = bpy.context.user_preferences.addons[__name__].preferences.camera_button
+    light_button = bpy.context.user_preferences.addons[__name__].preferences.light_button
+    empty_button = bpy.context.user_preferences.addons[__name__].preferences.empty_button
+    curve_button = bpy.context.user_preferences.addons[__name__].preferences.curve_button
+    armature_button = bpy.context.user_preferences.addons[__name__].preferences.armature_button
+    surface_button = bpy.context.user_preferences.addons[__name__].preferences.surface_button
+    text_button = bpy.context.user_preferences.addons[__name__].preferences.text_button
+    lattice_button = bpy.context.user_preferences.addons[__name__].preferences.lattice_button
+    field_button = bpy.context.user_preferences.addons[__name__].preferences.field_button
+    metaball_button = bpy.context.user_preferences.addons[__name__].preferences.metaball_button
+
     context = bpy.context
-    if sel_restrictor :
-        for obj in bpy.context.scene.objects:
-            if obj.type == 'MESH':
+
+    for obj in bpy.context.scene.objects:
+        if obj.type == 'MESH':
+            if emissive_as_light and is_emissive(obj) and obj.name.startswith(start_with):
+                obj.hide_select = not context.scene.lights  
+                print(obj.name)  
+            else:
                 obj.hide_select = not context.scene.meshes
-            if obj.type == 'CAMERA':
-                obj.hide_select = not context.scene.cameras
-            if obj.type == 'LAMP':
-                obj.hide_select = not context.scene.lights
-            if obj.type == 'EMPTY':
-                obj.hide_select = not context.scene.empties
-            if obj.type == 'CURVE':
-                obj.hide_select = not context.scene.nurbs
-            if obj.type == 'ARMATURE' :
-                obj.hide_select = not context.scene.bones
-            if obj.type == 'SURFACE' :
-                obj.hide_select = not context.scene.surfaces
-            if obj.type == 'FONT' :
-                obj.hide_select = not context.scene.texts
-            if obj.type == 'LATTICE' :
-                obj.hide_select = not context.scene.lattices
-            if obj.field.type != 'NONE' :
-                obj.hide_select = not context.scene.fields
-            if obj.type == 'META' :
-                obj.hide_select = not context.scene.metaballs
-                
+        if obj.type == 'CAMERA':
+            obj.hide_select = not context.scene.cameras
+        if obj.type == 'LAMP':
+            obj.hide_select = not context.scene.lights
+        if obj.type == 'EMPTY':
+            obj.hide_select = not context.scene.empties
+        if obj.type == 'CURVE':
+            obj.hide_select = not context.scene.nurbs
+        if obj.type == 'ARMATURE' :
+            obj.hide_select = not context.scene.bones
+        if obj.type == 'SURFACE' :
+            obj.hide_select = not context.scene.surfaces
+        if obj.type == 'FONT' :
+            obj.hide_select = not context.scene.texts
+        if obj.type == 'LATTICE' :
+            obj.hide_select = not context.scene.lattices
+        if obj.field.type != 'NONE' :
+            obj.hide_select = not context.scene.fields
+        if obj.type == 'META' :
+            obj.hide_select = not context.scene.metaballs
+
+    for obj in bpy.context.scene.objects:
+        if obj.type == 'MESH' and not mesh_button:
+            obj.hide_select = hidden_selectable
+        if obj.type == 'CAMERA' and not camera_button:
+            obj.hide_select = hidden_selectable
+        if obj.type == 'LAMP' and not light_button:
+            obj.hide_select = hidden_selectable
+        if obj.type == 'EMPTY' and not empty_button:
+            obj.hide_select = hidden_selectable
+        if obj.type == 'CURVE' and not curve_button:
+            obj.hide_select = hidden_selectable
+        if obj.type == 'ARMATURE' and not armature_button:
+            obj.hide_select = hidden_selectable
+        if obj.type == 'SURFACE' and not surface_button:
+            obj.hide_select = hidden_selectable
+        if obj.type == 'FONT' and not text_button:
+            obj.hide_select = hidden_selectable
+        if obj.type == 'LATTICE' and not lattice_button:
+            obj.hide_select = hidden_selectable
+        if obj.field.type != 'NONE' and not field_button:
+            obj.hide_select = hidden_selectable
+        if obj.type == 'META' and not metaball_button:
+            obj.hide_select = hidden_selectable
+
     for obj in bpy.context.scene.objects:        
             if obj.select and obj.hide_select :
                 obj.select = False
@@ -226,10 +275,25 @@ class SelectivityPreferences(AddonPreferences):
             default=False,
             )
 
+# here : light
+# hidden types are selectable
+
+    emissive_as_light = BoolProperty(
+            name="other light",
+            default=False,
+            )
+    start_with = StringProperty(
+            name="begins with:",
+            )
+    hidden_selectable = BoolProperty(
+            name="hidden selectable",
+            default=False,
+            )
+
     def draw(self, context):
         layout = self.layout
         row = layout.row()
-        row.label(text="What do you want to manage?")
+        row.label(text="Display only:")
         row = layout.row(align=True)
         row.prop(self, "mesh_button", icon='MESH_DATA', text='')
         row.prop(self, "light_button", icon='LAMP', text='')
@@ -242,7 +306,19 @@ class SelectivityPreferences(AddonPreferences):
         row.prop(self, "lattice_button", icon="OUTLINER_OB_LATTICE", text='')
         row.prop(self, "field_button", icon="FORCE_FORCE", text='')
         row.prop(self, "metaball_button", icon="META_BALL", text='')
-
+        row.separator()
+        row.separator()
+        row.prop(self, "hidden_selectable", icon='FILTER', text='')
+        if self.hidden_selectable:
+            row.label("Not displayed types are not selectable")
+        else:
+            row.label("Not displayed types are selectable")
+        
+        row = layout.row(align=True)
+        row.prop(self, "emissive_as_light", icon='LAMP_AREA', text='Emissive objects count as light')
+        row.prop(self, "start_with", text='if start with:')
+        row = layout.row(align=True)
+        
 
 class OBJECT_OT_addon_prefs(Operator):
     """Display example preferences"""
